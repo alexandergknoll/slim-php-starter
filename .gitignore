@@ -1,0 +1,12 @@
+/node_modules
+/cache
+/logs
+.env
+!.env.example
+!/logs/README.md
+
+/vendor/
+/public/files
+/public/images
+/public/scripts
+/public/styles
