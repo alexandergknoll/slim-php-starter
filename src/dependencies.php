@@ -19,6 +19,7 @@ $c['view'] = function ($c) {
     return $view;
 };
 
+
 // Register Twig View helper
 $c['view'] = function ($c) {
     $settings = $c->get('settings')['view'];
@@ -30,10 +31,6 @@ $c['view'] = function ($c) {
         'cache' => $cache
     ]);
 
-    if ($debug) {
-        $view->addExtension(new Twig_Extension_Debug());
-    }
-    
     // Instantiate and add Slim specific extension
     $router = $c->get('router');
     $uri = Uri::createFromEnvironment(new Environment($_SERVER));
