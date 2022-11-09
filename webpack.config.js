@@ -45,30 +45,35 @@ module.exports = (env = {}, argv) => {
             {
               loader: 'css-loader',
               options: {
+                importLoaders: 1,
                 sourceMap: ! isProduction
               }
             },
             {
               loader: 'postcss-loader',
               options: {
-                ident: 'postcss',
                 sourceMap: ! isProduction,
-                plugins: (() => {
-                  return isProduction ? [
-                    require('autoprefixer')(),
-                    require('cssnano')({
-                      preset: ['default', {
-                        minifySelectors: false
-                      }]
-                    })
-                  ] : [require('autoprefixer')()]
-                })()
+                postcssOptions: {
+                  ident: 'postcss',
+                  plugins: (() => {
+                    return isProduction ? [
+                      require('autoprefixer')(),
+                      require('cssnano')({
+                        preset: ['default', {
+                          minifySelectors: false
+                        }]
+                      })
+                    ] : [require('autoprefixer')()]
+                  })()
+                }
               }
             },
             {
               loader: 'sass-loader',
               options: {
-                outputStyle: 'expanded',
+                sassOptions: {
+                  outputStyle: 'expanded'
+                },
                 sourceMap: ! isProduction
               }
             }
@@ -188,11 +193,13 @@ module.exports = (env = {}, argv) => {
         //     removeStyleLinkTypeAttributes: true
         //   }
         // }),
-        new plugins.copy([
-          { from: 'images', to: 'images' },
-          { from: 'fonts', to: 'fonts' },
-          { from: 'files', to: 'files' }
-        ]),
+        new plugins.copy({ 
+          patterns: [
+            { from: 'images', to: 'images', noErrorOnMissing: true },
+            { from: 'fonts', to: 'fonts', noErrorOnMissing: true },
+            { from: 'files', to: 'files', noErrorOnMissing: true }
+          ]
+        }),
         new plugins.progress({
           color: '#5C95EE'
         })
@@ -200,15 +207,18 @@ module.exports = (env = {}, argv) => {
 
       const production = [
         new plugins.clean(['dist']),
-        new plugins.copy([
-          {
-            from: 'data/**/*.json',
-            // to: '',
-            transform: content => {
-              return minJSON(content.toString())
+        new plugins.copy({ 
+          patterns: [
+            {
+              from: 'data/**/*.json',
+              // to: '',
+              transform: content => {
+                return minJSON(content.toString())
+              },
+              noErrorOnMissing: true
             }
-          }
-        ]),
+          ]
+        }),
         new plugins.sri({
           hashFuncNames: ['sha384'],
           enabled: true
@@ -248,8 +258,8 @@ module.exports = (env = {}, argv) => {
 
     devtool: (() => {
       return isProduction
-        ? '' // 'hidden-source-map'
-        : 'source-map'
+        ? 'hidden-nosources-source-map' // 'hidden-source-map'
+        : 'inline-source-map'
     })(),
 
     resolve: {
