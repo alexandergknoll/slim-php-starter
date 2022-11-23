@@ -1,4 +1,4 @@
-# PHP Boilerplate
+# Slim PHP Starter
 
 This is a boilerplate starter project featuring:
 
